@@ -3,9 +3,18 @@ package cfg
 import (
 	"bufio"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 )
+
+func init() {
+	http.HandleFunc(
+		"/cfg-req",
+		func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, os.Getenv("CFG_REQFILE"))
+	})
+}
 
 // panicOn panics if err is not nil
 func panicOn(err error) {

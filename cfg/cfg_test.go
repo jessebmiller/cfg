@@ -2,19 +2,11 @@ package cfg
 
 import (
 	"bufio"
-	"crypto/rand"
 	"fmt"
 	"os"
 	"strings"
 	"testing"
 )
-
-// randStr returns a random string of l bytes
-func randStr(l int) string {
-	testData := make([]byte, l)
-	rand.Read(testData)
-	return string(testData)
-}
 
 func setUp() {
 	os.Setenv("CFG_REQFILE", "./cfg.req")
@@ -69,9 +61,9 @@ func TestGetFound(t *testing.T) {
 	// set up
 	setUp()
 	defer tearDown()
-	key := randStr(8)
-	default_ := randStr(16)
-	value := randStr(32)
+	key := "key"
+	default_ := "dval"
+	value := "val"
 	os.Setenv(key, value)
 	defer os.Unsetenv(key)
 
@@ -93,8 +85,8 @@ func TestGetMissing(t *testing.T) {
 	// set up
 	setUp()
 	defer tearDown()
-	default_ := randStr(16)
-	key := randStr(8)
+	default_ := "dval"
+	key := "key"
 
 	// run SUT
 	observedVal := Get(key, default_)
@@ -113,7 +105,7 @@ func TestFindMissing(t *testing.T) {
 	// set up
 	setUp()
 	defer tearDown()
-	missingKey := randStr(16)
+	missingKey := "missingKey"
 
 	// run SUT
 	observedVal, err := Find(missingKey)
@@ -131,7 +123,7 @@ func TestFindExistingFromEnv(t *testing.T) {
 	// set up
 	setUp()
 	defer tearDown()
-	testVal := randStr(16)
+	testVal := "testval"
 	os.Setenv("CFG_TEST_KEY", testVal)
 	defer os.Unsetenv("CFG_TEST_KEY")
 
