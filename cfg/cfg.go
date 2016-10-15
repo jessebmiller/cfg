@@ -52,14 +52,17 @@ func Get(key string, defaultVal string) (string) {
 
 func parseFile() map[string][]string {
 	file, err := os.Open(os.Getenv("CFG_REQFILE"))
-	panicOn(err)
 	defer file.Close()
 	m := make(map[string][]string)
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		kv := strings.Split(scanner.Text(), "=")
-		m[kv[0]] = strings.Split(kv[1], ",")
+	if err == nil {
+		// file exists
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			kv := strings.Split(scanner.Text(), "=")
+			m[kv[0]] = strings.Split(kv[1], ",")
+		}
 	}
+	// empty if file doesn't exist
 	return m
 }
 
