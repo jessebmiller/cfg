@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// init serve our config requirements file at /cfg-req
 func init() {
 	http.HandleFunc(
 		"/cfg-req",
@@ -50,6 +51,7 @@ func Get(key string, defaultVal string) (string) {
 	return val
 }
 
+// parseFile reads all the config keys and defaults we already saved
 func parseFile() map[string][]string {
 	file, err := os.Open(os.Getenv("CFG_REQFILE"))
 	defer file.Close()
@@ -66,6 +68,7 @@ func parseFile() map[string][]string {
 	return m
 }
 
+// writeFile writes the full map of keys and defaults to the file
 func writeFile(pairs map[string][]string) {
 	file, err := os.Create(os.Getenv("CFG_REQFILE"))
 	panicOn(err)
@@ -78,6 +81,7 @@ func writeFile(pairs map[string][]string) {
 	}
 }
 
+// rememberPair remembers a key and a default that the program asked for
 func rememberPair(key string, val string) error {
 	kvs := parseFile()
 	kvs[key] = append(kvs[key], val)
