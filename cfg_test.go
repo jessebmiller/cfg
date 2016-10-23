@@ -10,12 +10,40 @@ import (
 
 func setUp() {
 	os.Setenv("CFG_REQFILE", "./cfg.req")
+	os.Setenv("a", "a")
+	os.Setenv("b", "b")
 }
 
 func tearDown() {
 	os.Unsetenv("CFG_REQFILE")
+	os.Remove("./cfg.req")
+	os.Unsetenv("a")
+	os.Unsetenv("b")
 }
 
+// TestValidateOrFail shows that we can validate that all required configs
+// have been found by returning an error listing missing values on failure
+func TestValidate(t *testing.T) {
+	setUp()
+	defer tearDown()
+	_, _ = Find("a")
+	_, _ = Find("b")
+	_, _ = Find("c")
+	_, _ = Find("d")
+
+	// should not validate, should have a nice error
+	valid, err := Valid()
+	if err.Error() != "Missing keys [\"c\", \"d\"]" {
+		t.Errorf(
+			"cfg.Validate() => _, %s: want, %s",
+			err.Error(),
+			"Missing keys [\"c\", \"d\"]",
+		)
+	}
+	if valid {
+		t.Errorf("missing c and d but valid is true")
+	}
+}
 
 func TestFindRemembersKeys(t *testing.T) {
 	// set up
@@ -32,6 +60,11 @@ func TestFindRemembersKeys(t *testing.T) {
 	// run SUT
 	_, _ = Find(key)
 	_ = Get(missingKey, defaultVal)
+	_ = Get(missingKey, defaultVal2)
+
+	// should only keep one copy of any default value it sees
+	_ = Get(missingKey, defaultVal2)
+	_ = Get(missingKey, defaultVal2)
 	_ = Get(missingKey, defaultVal2)
 
 	// confirm cfg.req has both keys and the default
