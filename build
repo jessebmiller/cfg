@@ -1,0 +1,4 @@
+set -e
+docker build -t cfg .
+docker run -e greeter=build cfg
+docker run cfg
