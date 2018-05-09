@@ -12,11 +12,13 @@ import (
 
 // init serve our config requirements file at /cfg-req
 func init() {
-	http.HandleFunc(
-		"/cfg-req",
-		func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, os.Getenv("CFG_REQFILE"))
-	})
+	if os.Getenv("CFG_REQFILE_PATH") != "" {
+		http.HandleFunc(
+			"/cfg-req",
+			func(w http.ResponseWriter, r *http.Request) {
+				http.ServeFile(w, r, os.Getenv("CFG_REQFILE"))
+			})
+	}
 }
 
 // panicOn panics if err is not nil
